@@ -1,0 +1,38 @@
+name: Setup Astra
+description: Download and set up Astra (korarei/AviUtl2_Astra) for GitHub Actions
+author: Korarei
+
+branding:
+  icon: download
+  color: blue
+
+inputs:
+  version:
+    description: 'Astra version or SemVer range to install (e.g. "latest", "0.10.0", "v0.10.0", "0.10", "^0.10.0")'
+    required: false
+    default: latest
+  token:
+    description: GitHub token used for GitHub Releases API requests
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  version:
+    description: Installed Astra version without leading "v" (e.g. "0.10.0")
+    value: ${{ steps.install.outputs.version }}
+  tag:
+    description: Installed GitHub Release tag (e.g. "v0.10.0")
+    value: ${{ steps.install.outputs.tag }}
+  path:
+    description: Directory containing the installed astra executable
+    value: ${{ steps.install.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - id: install
+      shell: pwsh
+      env:
+        ASTRA_INPUT_VERSION: ${{ inputs.version }}
+        ASTRA_INPUT_TOKEN: ${{ inputs.token }}
+      run: '& "${{ github.action_path }}/scripts/install.ps1"'
